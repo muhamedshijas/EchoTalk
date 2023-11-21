@@ -1,4 +1,4 @@
-import UserModel from "../Models/UserModel.js"
+import User from "../Models/UserModel.js"
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -6,12 +6,12 @@ var salt=bcrypt.genSaltSync(10)
 export async function UserSignUp(req,res){
     try{
        const {name,email,mobileNo,password}=req.body
-       const existUser=await UserModel.findOne({email:email})
+       const existUser=await User.findOne({email:email})
        if(existUser){
         return res.json({error:true,message:"user Exist"})
        }else{
         const hashPassword=bcrypt.hashSync(password,salt)
-        const newUser=new UserModel({name,email,mobileNo,password:hashPassword})
+        const newUser=new User({name,email,mobileNo,password:hashPassword})
         await newUser.save()
         const token =jwt.sign({
             id:newUser._id
@@ -37,7 +37,7 @@ export async function checkUserLoggedIn(req,res){
             return res.json({loggedIn:false,err:true,message:"session expierd"})
         }
         const verifiedJwt=jwt.verify(token,"myjwtsecretkey")
-        const user =await UserModel.findById(verifiedJwt.id,{password:0})
+        const user =await User.findById(verifiedJwt.id,{password:0})
         if(!user){
             return res.json({loggedIn:false})
         }
@@ -52,7 +52,7 @@ export async function userLogin(req,res){
    try{
     const {email,password}=req.body
     console.log(req.body);
-    const user=await UserModel.findOne({email})
+    const user=await User.findOne({email})
     if(!user){
         return res.json({error:true,message:"no such user found"})
     }
