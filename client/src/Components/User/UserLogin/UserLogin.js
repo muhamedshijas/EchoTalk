@@ -25,7 +25,6 @@ function UserLogin() {
         }
     }
   return (
-    <div className='user-login'>
     <div className="login">
     <div className="login-head">
     <h2>Login Here</h2>
@@ -41,7 +40,6 @@ function UserLogin() {
     <div className="signup-ptions">
     <p>Don't You have an account</p>
     <Link to= '/signup'>signup here </Link>
-    </div>
     </div>
     </div>
   )

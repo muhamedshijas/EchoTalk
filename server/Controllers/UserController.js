@@ -87,3 +87,14 @@ res.cookie("userToken","",{
     sameSite:"none"
 }).json({message:"logged out",error:false})
 }
+
+ export async function getAllUsers(req,res){
+    const name= req.query.name
+    const allUsers = await User.find({
+  $or: [
+    { name: { $regex: new RegExp(name, 'i') } },  // Case-insensitive name search
+    { email: { $regex: new RegExp(name, 'i') } }  // Case-insensitive email search
+  ]
+}).lean();
+console.log(allUsers);
+ }

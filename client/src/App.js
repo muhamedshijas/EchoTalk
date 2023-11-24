@@ -7,6 +7,7 @@ import UserLoginPage from './Pages/UserLoginPage';
 import UserSignUpPage from './Pages/UserSignUpPage';
 import { useDispatch, useSelector } from 'react-redux';
 import UserHomePage from './Pages/UserHomePage';
+import UserAvatar from './Components/User/UserAvatar/UserAvatar';
 function App() {
   
   axios.defaults.withCredentials=true;

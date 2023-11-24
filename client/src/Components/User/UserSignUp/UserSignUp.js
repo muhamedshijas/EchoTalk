@@ -28,7 +28,6 @@ function Usersignup() {
     }
   return (
     
-    <div className='user-signup'>
     <div className="signup">
     <div className="signup-head">
     <h2>signup Here</h2>
@@ -46,7 +45,6 @@ function Usersignup() {
     <div className="signup-options">
     <p>Already Have an account</p>
     <Link to= '/signup'>Login here</Link>
-    </div>
     </div>
     </div>
   )
