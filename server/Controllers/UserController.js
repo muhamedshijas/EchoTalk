@@ -1,100 +1,61 @@
-import User from "../Models/UserModel.js"
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import asyncHandler from "express-async-handler";
+import User from "../Models/UserModel.js";
+import genereateToken from "../Config/generateToken.js";
+//express async handler for handlling the erros automaticallly
 
-var salt=bcrypt.genSaltSync(10)
-export async function UserSignUp(req,res){
-    try{
-       const {name,email,mobileNo,password}=req.body
-       const existUser=await User.findOne({email:email})
-       if(existUser){
-        return res.json({error:true,message:"user Exist"})
-       }else{
-        const hashPassword=bcrypt.hashSync(password,salt)
-        const newUser=new User({name,email,mobileNo,password:hashPassword})
-        await newUser.save()
-        const token =jwt.sign({
-            id:newUser._id
-        },"myjwtsecretkey"
-        )
-        return res.cookie("userToken",token,{
-            httpOnly:true,
-            secure:true,
-            maxAge:1000*60*60*24*7,
-            sameSite:"none"
-        }).json({err:false})
+export async function registerUser(req,res){
+   
+  const { name, email, mobileNo, password, pic } = req.body;
 
-       }
-    }catch(err){
-        console.log(err)
-    }
+  if (!name || !email || !password || !mobileNo) {
+    res.status(400);
+    throw new Error("please enter all the fields");
+  }
+
+  const userExist = await User.findOne({ email });
+  if (userExist) {
+    res.status(400);
+    throw new Error("User already exist");
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    pic,
+    mobileNo,
+  });
+  
+
+  if(user){
+    res.status(201).json({
+        _id:user._id,
+        name:user.name,
+        email:user.email,
+        pic:user.pic,
+        token:genereateToken(user._id)
+    })
+  }else{
+    res.status(400);
+    throw new Error("failed to create")
+  }
+
 }
 
-export async function checkUserLoggedIn(req,res){
-    try{
-        const token=req.cookies.userToken
-        if(!token){
-            return res.json({loggedIn:false,err:true,message:"session expierd"})
-        }
-        const verifiedJwt=jwt.verify(token,"myjwtsecretkey")
-        const user =await User.findById(verifiedJwt.id,{password:0})
-        if(!user){
-            return res.json({loggedIn:false})
-        }
-        return res.json({user,loggedIn:true})
-    }catch(err){
-        console.log(err)
-        return res.json({loggedIn:false,error:err})
-    }
-}
-
-export async function userLogin(req,res){
-   try{
+export async function loginUser(req,res){
     const {email,password}=req.body
-    console.log(req.body);
-    const user=await User.findOne({email})
-    if(!user){
-        return res.json({error:true,message:"no such user found"})
+    const user= await User.findOne({email})
+
+    if(user&& (await User.matchPassword(password))){
+        res.json({
+            _id:user._id,
+            name:user.name,
+            email:user.email,
+            pic:user.pic,
+            token:genereateToken(user._id)
+        })
+    }else{
+        res.status(401)
+        throw new Error("invalid email or password")
     }
-    const validUser=bcrypt.compareSync(password,user.password)
-    console.log(user.password)
-    if(!validUser){
-        return res.json({error:true,message:"Wrong Password"})
-    }
-    const token =jwt.sign({
-        id:user._id
-    },"myjwtsecretkey"
-    )
-    return res.cookie("userToken",token,{
-        httpOnly:true,
-        secure:true,
-        maxAge:1000*60*60*24*7,
-        sameSite:"none"
-    }).json({err:false})
-   }catch(err){
-    console.log("err", err)
-    return res.json({error:true,message:err})
-
-   }
 }
-
-
-export async function userLogout(req,res){
-res.cookie("userToken","",{
-    httpOnly:true,
-    expires:new Date(0),
-    secure:true,
-    sameSite:"none"
-}).json({message:"logged out",error:false})
-}
-
- export async function getAllUsers(req,res){
-    const name= req.query.name
-    const allUsers = await User.find({
-  $or: [
-    { name: { $regex: new RegExp(name, 'i') } },  // Case-insensitive name search
-    { email: { $regex: new RegExp(name, 'i') } }  // Case-insensitive email search
-  ]
-}).lean();
-console.log(allUsers);
- }
