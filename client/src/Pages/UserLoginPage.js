@@ -5,7 +5,6 @@ function UserLoginPage() {
   return (
     <div>
       <UserLogin/>
-      <h1>hiii</h1>
     </div>
   )
 }

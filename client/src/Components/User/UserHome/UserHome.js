@@ -25,6 +25,7 @@ function UserHome() {
       <Box
         d="flex"
         justifyContent="center"
+        alignContent="center"
         p={3}
         bg={"white"}
         w="100%"
@@ -32,7 +33,7 @@ function UserHome() {
         borderRadius="1g"
         borderWidth="1px"
       >
-        <Text fontSize="4xl" color="black">
+        <Text fontSize="4xl" color="black" textAlign="center">
           Snap Chat
         </Text>
         </Box>
