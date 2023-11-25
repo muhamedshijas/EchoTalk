@@ -9,17 +9,22 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import UserLoginPage from "../../../Pages/UserLoginPage";
 import UserSignUpPage from "../../../Pages/UserSignUpPage";
+import { useNavigate } from "react-router-dom";
+
 
 function UserHome() {
-  const dispatch = useDispatch();
-  async function handleLogout(e) {
-    await axios.get("/user/logout");
-    dispatch({ type: "refresh" });
-  }
+
+  const navigate=useNavigate();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+    if (user) navigate("/chats");
+  }, [navigate]);
+ 
   return (
     <Container maxW="xl" centerContent>
       <Box
@@ -33,8 +38,8 @@ function UserHome() {
         borderRadius="1g"
         borderWidth="1px"
       >
-        <Text fontSize="4xl" color="black" textAlign="center">
-          Snap Chat
+        <Text fontSize="4xl" color="black" textAlign="center" fontFamily="arial">
+         Echo Talk
         </Text>
         </Box>
 

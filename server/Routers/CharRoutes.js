@@ -1,5 +1,14 @@
-import express from express
+import express from 'express'
+
+import { protect } from '../Middlewares/authMiddleWare.js'
+import { accessChat, addToGroup, createGroupChat, fetchChats, removeFromGroup, renameGroup } from '../Controllers/chatController.js';
 const router= express.Router()
 
+router.route("/").post(protect, accessChat);
+router.route("/").get(protect, fetchChats);
+router.route("/group").post(protect, createGroupChat);
+router.route("/rename").put(protect, renameGroup);
+router.route("/groupremove").put(protect, removeFromGroup);
+router.route("/groupadd").put(protect, addToGroup);
 
-router.get('/')
+export default router

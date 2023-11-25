@@ -45,7 +45,7 @@ export async function registerUser(req,res){
 export async function loginUser(req,res){
     const {email,password}=req.body
     const user= await User.findOne({email})
-
+  console.log(user);
     if(user&& user.password===password){
         res.json({
             _id:user._id,
@@ -58,4 +58,17 @@ export async function loginUser(req,res){
         res.status(401)
         throw new Error("invalid email or password")
     }
+}
+export async function getAllUsers(req,res){
+  const keyword = req.query.search
+  ? {
+      $or: [
+        { name: { $regex: req.query.search, $options: "i" } },
+        { email: { $regex: req.query.search, $options: "i" } },
+      ],
+    }
+  : {};
+
+  const users= (await User.find(keyword)).find({ _id: { $ne: req.user._id } });
+res.send(users)
 }

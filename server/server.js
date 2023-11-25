@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dbConnect from './Config/dbConnect.js'
 import userRouter from './Routers/UserRouter.js'
+import ChatRoutes from './Routers/CharRoutes.js'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import { errorHandler, notFound } from './Middlewares/errorMiddleWare.js'
@@ -20,6 +21,7 @@ app.use(cors({
     credentials:true
 }))
 app.use('/api/user',userRouter)
+app.use('/api/chat',ChatRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

@@ -7,17 +7,18 @@ import App from './App';
 import store from './Store/Store.js';
 import { ChakraProvider } from '@chakra-ui/react';
 import reportWebVitals from './reportWebVitals';
+import ChatProvider from './Context/ChatProvider.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
   <ChakraProvider>
-  <Provider store={store}>
-  <BrowserRouter>
-  <App />
-  </BrowserRouter>
-  </Provider>
-  </ChakraProvider>
+    <BrowserRouter>
+      <ChatProvider>
+        <App />
+      </ChatProvider>
+    </BrowserRouter>
+  </ChakraProvider>,
   </React.StrictMode>
 );
 

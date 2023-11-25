@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./UserLogin.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { VStack } from "@chakra-ui/react";
@@ -13,29 +13,77 @@ import {
   InputRightElement,
   Show,
 } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 
 function UserLogin() {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [picLoading, setPicLoading] = useState(false);
+
+  const toast = useToast();
+  const navigate = useNavigate();
   function handleClick() {
     setShow(!show);
   }
   const dispatch = useDispatch();
-  function validationErr() {
-    if (email.trim() === "" || password.trim() === "") {
-      return false;
-    }
-    return true;
-  }
 
-  async function handleSubmit() {}
+  async function handleSubmit() {
+    if (!email || !password) {
+      toast({
+        title: "Please Fill all the Feilds",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "/api/user/login",
+        { email, password },
+        config
+      );
+      toast({
+        title: "Login Successfull",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      console.log(localStorage);
+
+      setPicLoading(false);
+      navigate("/chats");
+      return;
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Registration Successfull",
+        description: error.response.data.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
+  }
   return (
     <VStack>
       <FormControl id="Emai" isRequired>
         <FormLabel>Email</FormLabel>
         <Input
           placeholder="Enter Your Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
@@ -44,6 +92,7 @@ function UserLogin() {
         <InputGroup>
           <Input
             placeholder="Enter Password"
+            value={password}
             type={show ? "text" : "password"}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -60,6 +109,7 @@ function UserLogin() {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={handleSubmit}
+        isLoading={picLoading}
       >
         Login
       </Button>
@@ -68,9 +118,9 @@ function UserLogin() {
         colorScheme="green"
         width="100%"
         style={{ marginTop: 15 }}
-        onClick={()=>{
-            setEmail("guest@gmail.com")
-            setPassword("login 123")
+        onClick={() => {
+          setEmail("guest@gmail.com");
+          setPassword("login123");
         }}
       >
         Login As Guest
