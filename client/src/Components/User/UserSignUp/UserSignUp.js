@@ -26,7 +26,6 @@ function Usersignup() {
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
   
-  const dispatch = useDispatch();
   const toast = useToast();
   const navigate= useNavigate()
 

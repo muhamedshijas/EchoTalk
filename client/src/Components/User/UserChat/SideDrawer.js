@@ -4,6 +4,8 @@ import { RiSearch2Line } from "react-icons/ri";
 import { TfiBell } from "react-icons/tfi";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { ChatState } from "../../../Context/ChatProvider";
+import UserProfile from "../../../Modals/UserProfile";
+import { useNavigate } from "react-router-dom";
 
 
 function SideDrawer() {
@@ -19,6 +21,13 @@ function SideDrawer() {
     chats,
     setChats,
   } = ChatState();
+  const navigate= useNavigate()
+
+  function handleLogout(){
+    localStorage.removeItem("userInfo");
+    navigate("/")
+  }
+    
 
 
   return (
@@ -61,9 +70,11 @@ function SideDrawer() {
     />
       </MenuButton>
       <MenuList>
+      <UserProfile user={user}>
       <MenuItem>My Profile</MenuItem>
+      </UserProfile>
       <MenuDivider/>
-      <MenuItem>Logout Button</MenuItem>
+      <MenuItem onClick={handleLogout}> Logout Button</MenuItem>
       </MenuList>
       </Menu>
       </div>

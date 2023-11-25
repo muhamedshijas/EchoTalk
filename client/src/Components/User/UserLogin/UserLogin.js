@@ -26,7 +26,6 @@ function UserLogin() {
   function handleClick() {
     setShow(!show);
   }
-  const dispatch = useDispatch();
 
   async function handleSubmit() {
     if (!email || !password) {
