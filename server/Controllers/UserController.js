@@ -69,6 +69,7 @@ export async function getAllUsers(req,res){
     }
   : {};
 
-  const users= (await User.find(keyword)).find({ _id: { $ne: req.user._id } });
-res.send(users)
+const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+
+res.send(users);
 }

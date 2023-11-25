@@ -2,10 +2,12 @@ import Chat from "../Models/ChatModel.js";
 import User from "../Models/UserModel.js";
 export async function accessChat(req, res) {
   const { userId } = req.body;
+
   if (!userId) {
-    console.log("user id not sent with reques");
+    console.log("UserId param not sent with request");
     return res.sendStatus(400);
   }
+  
   var isChat = await Chat.find({
     isGroupChat: false,
     $and: [
@@ -29,14 +31,18 @@ export async function accessChat(req, res) {
       isGroupChat: false,
       users: [req.user._id, userId],
     };
+
     try {
+        
       const createdChat = await Chat.create(chatData);
       const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
         "users",
         "-password"
       );
+   
       res.status(200).json(FullChat);
     } catch (error) {
+        console.log(error);
       res.status(400);
       throw new Error(error.message);
     }
@@ -45,6 +51,7 @@ export async function accessChat(req, res) {
 
 export async function fetchChats(req, res) {
   try {
+    console.log("iiii");
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
@@ -55,6 +62,7 @@ export async function fetchChats(req, res) {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+      
         res.status(200).send(results);
       });
   } catch (error) {
@@ -94,8 +102,8 @@ export async function createGroupChat(req, res) {
   }
 }
 
-export async function renameGroup(req,res){
-    const { chatId, chatName } = req.body;
+export async function renameGroup(req, res) {
+  const { chatId, chatName } = req.body;
 
   const updatedChat = await Chat.findByIdAndUpdate(
     chatId,
@@ -117,33 +125,33 @@ export async function renameGroup(req,res){
   }
 }
 
-export async function removeFromGroup(req,res){
-    const { chatId, userId } = req.body;
+export async function removeFromGroup(req, res) {
+  const { chatId, userId } = req.body;
 
-    // check if the requester is admin
-  
-    const removed = await Chat.findByIdAndUpdate(
-      chatId,
-      {
-        $pull: { users: userId },
-      },
-      {
-        new: true,
-      }
-    )
-      .populate("users", "-password")
-      .populate("groupAdmin", "-password");
-  
-    if (!removed) {
-      res.status(404);
-      throw new Error("Chat Not Found");
-    } else {
-      res.json(removed);
-}
+  // check if the requester is admin
+
+  const removed = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $pull: { users: userId },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+
+  if (!removed) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(removed);
+  }
 }
 
-export async function addToGroup(req,res){
-    const { chatId, userId } = req.body;
+export async function addToGroup(req, res) {
+  const { chatId, userId } = req.body;
 
   // check if the requester is admin
 

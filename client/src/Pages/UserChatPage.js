@@ -18,8 +18,13 @@ function UserChatPage() {
           h="91.5vh"
           p="10px"
         >
-          user&& <MyChats></MyChats>
-          user&& <ChatBox></ChatBox>
+         {
+            user && <MyChats></MyChats>
+           
+         }
+         {
+            user && <ChatBox></ChatBox>
+         }
         </Box>
       }
     </div>
